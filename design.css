@@ -1,0 +1,174 @@
+/* ===============================
+   BASE GERAL
+=============================== */
+
+html, body, [class*="css"] {
+    font-family: "Inter", "Segoe UI", sans-serif;
+    color: #222222;
+    background-color: #F7F7F7;
+}
+
+/* ===============================
+   TÍTULOS (REDUZIDOS E ELEGANTES)
+=============================== */
+
+h1 {
+    font-size: 1.6rem !important;
+    font-weight: 600;
+    margin-bottom: 0.6rem;
+}
+
+h2 {
+    font-size: 1.3rem !important;
+    font-weight: 600;
+    margin-top: 1.5rem;
+}
+
+h3 {
+    font-size: 1.1rem !important;
+    font-weight: 600;
+    color: #444444;
+}
+
+/* ===============================
+   SEÇÕES / CARDS
+=============================== */
+
+section[data-testid="stVerticalBlock"] {
+    background-color: #FFFFFF;
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+}
+
+/* ===============================
+   DIVISORES
+=============================== */
+
+hr {
+    border: none;
+    height: 1px;
+    background-color: #E0E0E0;
+    margin: 1.2rem 0;
+}
+
+/* ===============================
+   INPUTS
+=============================== */
+
+input, textarea, select {
+    border-radius: 10px !important;
+    border: 1px solid #DDDDDD !important;
+    padding: 0.5rem;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: #FF385C !important;
+    box-shadow: 0 0 0 2px rgba(255,56,92,0.15);
+}
+
+/* ===============================
+   CHECKBOX
+=============================== */
+
+input[type="checkbox"] {
+    accent-color: #FF385C;
+}
+
+/* ===============================
+   BOTÕES
+=============================== */
+
+button {
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+}
+
+/* Botão principal (Salvar) */
+
+button[kind="primary"] {
+    background-color: #ffffff !important;
+    color: rgb(0, 0, 0) !important;
+    border: 1px solid #d32f2f
+}
+
+button[kind="primary"]:hover {
+    background-color: #9e9e9e !important;
+    color: rgb(255, 255, 255) !important;
+    border: 1px solid #555555
+}
+
+
+/* ===============================
+   TABELAS
+=============================== */
+
+table {
+    border-collapse: separate !important;
+    border-spacing: 0;
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+thead {
+    background-color: #F0F0F0;
+}
+
+thead th {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: #555555;
+}
+
+tbody td {
+    font-size: 0.85rem;
+    padding: 0.6rem;
+}
+
+/* ===============================
+   MENSAGENS
+=============================== */
+
+div[data-testid="stSuccess"] {
+    background-color: #E8F7EE;
+    border-left: 5px solid #34A853;
+}
+
+div[data-testid="stError"] {
+    background-color: #FDEAEA;
+    border-left: 5px solid #FF385C;
+}
+
+div[data-testid="stWarning"] {
+    background-color: #FFF4E5;
+    border-left: 5px solid #FF9800;
+}
+
+/* ===============================
+   SCROLL MAIS SUAVE
+=============================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #CCCCCC;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #999999;
+}
+
+/* Remove textos padrão em inglês */
+div[data-baseweb="select"] span {
+    font-size: 0;
+}
+
+div[data-baseweb="select"]::after {
+    content: "Selecione";
+    font-size: 14px;
+    color: #666;
+}
