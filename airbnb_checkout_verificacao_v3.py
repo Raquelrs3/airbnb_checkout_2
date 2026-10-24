@@ -7,7 +7,7 @@ Fluxo em etapas (uma tela por ambiente), pensado para celular e computador:
 
 - Registro salvo no Google Sheets (aba "checkouts")
 - Fotos salvas no Google Drive, numa subpasta por check-out:
-      <PASTA_RAIZ>/2026-10-23_Citta_Residence/2026-10-23_Citta_Residence_Quarto_1_01.jpg
+      <PASTA_RAIZ>/Citta_Residence/2026-10-23_Citta_Residence/2026-10-23_Citta_Residence_Quarto_1_01.jpg
 
 Arquivos do projeto: app.py, design.css, requirements.txt, .streamlit/config.toml (tema)
 """
@@ -740,7 +740,9 @@ def salvar_checkout():
     nome_checkout = f"{data_str()}_{slug(apartamento())}"
     if any(fotos for _, fotos in grupos):
         drive = conectar_drive()
-        pasta_id = obter_ou_criar_pasta(drive, nome_checkout, pasta_raiz_fotos())
+        # uma pasta por apartamento e, dentro dela, uma pasta por check-out
+        pasta_apto = obter_ou_criar_pasta(drive, slug(apartamento()), pasta_raiz_fotos())
+        pasta_id = obter_ou_criar_pasta(drive, nome_checkout, pasta_apto)
         for titulo, fotos in grupos:
             registro[f"Fotos - {titulo}"] = (
                 enviar_fotos(drive, fotos, pasta_id, f"{nome_checkout}_{slug(titulo)}")
