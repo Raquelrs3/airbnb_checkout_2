@@ -1,174 +1,154 @@
-/* ===============================
-   BASE GERAL
-=============================== */
-
-html, body, [class*="css"] {
-    font-family: "Inter", "Segoe UI", sans-serif;
-    color: #222222;
-    background-color: #F7F7F7;
+/* =====================================================
+   CHECK-OUT · tema cinza / vermelho / branco
+   As cores base ficam em .streamlit/config.toml; aqui só o acabamento.
+   ===================================================== */
+:root {
+    --ck-red: #E24B4A;
+    --ck-red-dark: #A32D2D;
+    --ck-red-soft: #FCEBEB;
+    --ck-ink: #27272A;
+    --ck-muted: #71717A;
+    --ck-line: #E4E4E7;
+    --ck-soft: #F4F4F5;
 }
 
-/* ===============================
-   TÍTULOS (REDUZIDOS E ELEGANTES)
-=============================== */
-
-h1 {
-    font-size: 1.6rem !important;
-    font-weight: 600;
-    margin-bottom: 0.6rem;
+/* ---------- Página ---------- */
+[data-testid="stMainBlockContainer"] {
+    max-width: 920px;
+    padding-top: 1.5rem;
+    padding-bottom: 3rem;
 }
+[data-testid="stHeader"] { background: transparent; }
 
-h2 {
-    font-size: 1.3rem !important;
-    font-weight: 600;
-    margin-top: 1.5rem;
+/* ---------- Cabeçalho da etapa ---------- */
+.ck-head { margin: 0 0 0.25rem; }
+.ck-sub { font-size: 0.78rem; color: var(--ck-muted); }
+.ck-title { font-size: 1.25rem; font-weight: 600; color: var(--ck-ink); margin-bottom: 0.6rem; }
+.ck-prog { height: 6px; background: var(--ck-line); border-radius: 3px; overflow: hidden; }
+.ck-prog-fill { height: 100%; background: var(--ck-red); border-radius: 3px; }
+.ck-prog-txt { font-size: 0.75rem; color: var(--ck-muted); margin-top: 0.35rem; }
+
+/* ---------- Cartões (st.container(border=True)) ---------- */
+[class*="st-key-card-"] { background: #FFFFFF; }
+.ck-card-head { display: flex; align-items: center; gap: 0.5rem; }
+.ck-icon {
+    font-family: "Material Symbols Rounded";
+    font-size: 1.25rem; line-height: 1; color: var(--ck-red);
+    font-feature-settings: "liga";
 }
-
-h3 {
-    font-size: 1.1rem !important;
-    font-weight: 600;
-    color: #444444;
+.ck-card-title { font-size: 1.05rem; font-weight: 600; color: var(--ck-ink); }
+.ck-card-count { margin-left: auto; font-size: 0.8rem; color: var(--ck-muted); }
+.ck-card-desc {
+    font-size: 0.82rem; color: var(--ck-muted);
+    border-bottom: 1px solid var(--ck-soft); padding: 0.2rem 0 0.6rem; margin-bottom: 0.2rem;
 }
+.ck-group { font-size: 0.75rem; color: var(--ck-muted); margin: 0.6rem 0 0; text-transform: uppercase; letter-spacing: 0.04em; }
+.ck-muted { color: var(--ck-muted); font-weight: 400; }
 
-/* ===============================
-   SEÇÕES / CARDS
-=============================== */
-
-section[data-testid="stVerticalBlock"] {
-    background-color: #FFFFFF;
-    border-radius: 14px;
-    padding: 1.2rem 1.5rem;
-    margin-bottom: 1.2rem;
-    box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+/* ---------- Itens do checklist como cartões clicáveis ---------- */
+[class*="st-key-grade-"] {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem !important;
 }
+[class*="st-key-grade-num-"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+[class*="st-key-grade-fotos-"] { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+[class*="st-key-grade-"] > div { width: auto !important; min-width: 0; }
 
-/* ===============================
-   DIVISORES
-=============================== */
-
-hr {
-    border: none;
-    height: 1px;
-    background-color: #E0E0E0;
-    margin: 1.2rem 0;
-}
-
-/* ===============================
-   INPUTS
-=============================== */
-
-input, textarea, select {
-    border-radius: 10px !important;
-    border: 1px solid #DDDDDD !important;
-    padding: 0.5rem;
-}
-
-input:focus, textarea:focus, select:focus {
-    border-color: #FF385C !important;
-    box-shadow: 0 0 0 2px rgba(255,56,92,0.15);
-}
-
-/* ===============================
-   CHECKBOX
-=============================== */
-
-input[type="checkbox"] {
-    accent-color: #FF385C;
-}
-
-/* ===============================
-   BOTÕES
-=============================== */
-
-button {
-    border-radius: 12px !important;
-    font-weight: 600 !important;
-}
-
-/* Botão principal (Salvar) */
-
-button[kind="primary"] {
-    background-color: #ffffff !important;
-    color: rgb(0, 0, 0) !important;
-    border: 1px solid #d32f2f
-}
-
-button[kind="primary"]:hover {
-    background-color: #9e9e9e !important;
-    color: rgb(255, 255, 255) !important;
-    border: 1px solid #555555
-}
-
-
-/* ===============================
-   TABELAS
-=============================== */
-
-table {
-    border-collapse: separate !important;
-    border-spacing: 0;
-    border-radius: 12px;
-    overflow: hidden;
-}
-
-thead {
-    background-color: #F0F0F0;
-}
-
-thead th {
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: #555555;
-}
-
-tbody td {
-    font-size: 0.85rem;
-    padding: 0.6rem;
-}
-
-/* ===============================
-   MENSAGENS
-=============================== */
-
-div[data-testid="stSuccess"] {
-    background-color: #E8F7EE;
-    border-left: 5px solid #34A853;
-}
-
-div[data-testid="stError"] {
-    background-color: #FDEAEA;
-    border-left: 5px solid #FF385C;
-}
-
-div[data-testid="stWarning"] {
-    background-color: #FFF4E5;
-    border-left: 5px solid #FF9800;
-}
-
-/* ===============================
-   SCROLL MAIS SUAVE
-=============================== */
-
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #CCCCCC;
+[class*="st-key-grade-"] [data-testid="stCheckbox"] label {
+    width: 100%;
+    min-height: 2.75rem;
+    align-items: center;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--ck-line);
     border-radius: 10px;
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+[class*="st-key-grade-"] [data-testid="stCheckbox"] label:hover { border-color: #D4D4D8; }
+[class*="st-key-grade-"] [data-testid="stCheckbox"] label:has(input:checked) {
+    background: var(--ck-red-soft);
+    border-color: var(--ck-red);
+}
+[class*="st-key-grade-"] [data-testid="stCheckbox"] label:has(input:checked) p {
+    color: #791F1F;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: #999999;
+/* ---------- Linhas que ficam lado a lado também no celular ---------- */
+[class*="st-key-lin-"] { flex-wrap: nowrap !important; }
+[class*="st-key-lin-"] > div { flex: 1 1 0 !important; min-width: 0 !important; width: auto !important; }
+
+/* Rouparia / panelas: cada item é uma linha com divisória */
+[class*="st-key-roupa-"], [class*="st-key-panela-"] {
+    border-top: 1px solid var(--ck-soft);
+    padding-top: 0.6rem;
+    gap: 0.3rem !important;
+}
+.ck-row-head { margin-bottom: 0.35rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; font-size: 0.9rem; }
+
+/* Selos de status */
+.ck-pill {
+    display: inline-block; font-size: 0.72rem; padding: 0.15rem 0.6rem; border-radius: 999px;
+    background: var(--ck-soft); color: #52525B; border: 1px solid var(--ck-line); white-space: nowrap;
+}
+.ck-pill.ok   { background: #EAF3DE; color: #27500A; border-color: #C0DD97; }
+.ck-pill.bad  { background: var(--ck-red-soft); color: #791F1F; border-color: #F7C1C1; }
+.ck-pill.warn { background: #FAEEDA; color: #633806; border-color: #FAC775; }
+
+/* Resumo da finalização */
+.ck-sum-row {
+    display: grid; grid-template-columns: 1fr auto auto; gap: 0.75rem; align-items: center;
+    padding: 0.55rem 0; border-bottom: 1px solid var(--ck-soft); font-size: 0.9rem;
+}
+.ck-sum-row .ck-muted { font-size: 0.78rem; }
+
+/* ---------- Botões ---------- */
+[data-testid="stBaseButton-primary"], [data-testid="stBaseButton-secondary"] {
+    min-height: 2.9rem;
+    font-weight: 600;
+}
+[class*="st-key-nav-rodape"] { margin-top: 0.5rem; flex-wrap: nowrap !important; }
+[class*="st-key-nav-rodape"] > div { flex: 1 1 0 !important; min-width: 0 !important; }
+[class*="st-key-nav-rodape"] > div:last-child { flex-grow: 1.6 !important; }
+
+/* Expanders de observação / fotos */
+[class*="st-key-lin-extras"] { align-items: flex-start; }
+[data-testid="stExpander"] details { background: #FFFFFF; }
+
+/* ---------- Menu lateral ---------- */
+[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] { padding-top: 0.5rem; }
+.ck-brand { display: flex; align-items: center; gap: 0.6rem; font-weight: 600; font-size: 1rem; color: #FFFFFF; margin: 0 0 0.6rem; }
+.ck-logo {
+    width: 1.7rem; height: 1.7rem; border-radius: 6px; background: var(--ck-red); color: #FFFFFF;
+    display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem;
+}
+.ck-sec { font-size: 0.7rem; color: #A1A1AA; margin: 1rem 0 0.45rem 0.6rem; text-transform: uppercase; letter-spacing: 0.04em; }
+[data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0.15rem; }
+[data-testid="stSidebar"] [data-testid^="stBaseButton-"]:not([data-testid="stBaseButton-headerNoPadding"]) {
+    justify-content: flex-start !important; min-height: 2.2rem !important; width: 100%;
+}
+[data-testid="stSidebar"] [data-testid^="stBaseButton-"] > div { justify-content: flex-start !important; }
+[data-testid="stSidebar"] button p { font-size: 0.85rem; }
+[data-testid="stSidebar"] [data-testid="stBaseButton-tertiary"] { color: #D4D4D8; padding-left: 0.6rem; }
+[data-testid="stSidebar"] [data-testid="stBaseButton-tertiary"]:hover { color: #FFFFFF; background: #3F3F46; }
+[data-testid="stSidebar"] [data-testid="stBaseButton-primary"] {
+    background: #3F3F46 !important; border: none !important; color: #FFFFFF !important;
+    border-left: 3px solid var(--ck-red) !important; border-radius: 0 8px 8px 0 !important;
+    min-height: 2.2rem !important; font-weight: 500;
 }
 
-/* Remove textos padrão em inglês */
-div[data-baseweb="select"] span {
-    font-size: 0;
-}
-
-div[data-baseweb="select"]::after {
-    content: "Selecione";
-    font-size: 14px;
-    color: #666;
+/* ---------- Celular ---------- */
+@media (max-width: 640px) {
+    [data-testid="stMainBlockContainer"] { padding: 3rem 0.75rem 3rem; }
+    .ck-title { font-size: 1.1rem; }
+    [class*="st-key-grade-"],
+    [class*="st-key-grade-num-"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    [class*="st-key-grade-fotos-"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    [class*="st-key-grade-"] [data-testid="stCheckbox"] label { min-height: 3rem; }
+    [class*="st-key-lin-extras"], [class*="st-key-lin-filtros"], [class*="st-key-lin-ident"] {
+        flex-wrap: wrap !important;
+    }
+    [class*="st-key-lin-extras"] > div, [class*="st-key-lin-filtros"] > div,
+    [class*="st-key-lin-ident"] > div { flex-basis: 100% !important; }
 }
