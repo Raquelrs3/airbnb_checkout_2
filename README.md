@@ -1,3 +1,4 @@
+<img width="1376" height="768" alt="Gemini_Generated_Image_lsncuplsncuplsnc" src="https://github.com/user-attachments/assets/d163d8d0-2630-407d-95e9-0d624b679c6c" />
 
 # App de Check-out – Verificação dos Apartamentos (Airbnb)
 ![capa_checkout](https://github.com/user-attachments/assets/60ea48cc-2b06-4e05-b79e-30867233786c/>)
