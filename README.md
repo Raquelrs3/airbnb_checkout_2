@@ -1,5 +1,5 @@
 # App de Check-out – Verificação dos Apartamentos (Airbnb)
-![APP Checkout](Gemini_Generated_Image_lsncuplsncuplsnc.jpeg)
+![APP Checkout](<img width="1376" height="768" alt="Gemini_Generated_Image_lsncuplsncuplsnc" src="https://github.com/user-attachments/assets/6a41234b-1add-4853-bed2-15f7159cb33d" />)
 
 
 Este é um projeto de gestão dos meus próprios apartamentos anunciados no Airbnb. É uma aplicação web em Streamlit, usada no celular durante a vistoria de saída do hóspede.
