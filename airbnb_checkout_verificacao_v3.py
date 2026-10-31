@@ -8,6 +8,8 @@ Fluxo em etapas (uma tela por ambiente), pensado para celular e computador:
 - Registro salvo no Google Sheets (aba "checkouts")
 - Fotos salvas no Google Drive, numa subpasta por check-out:
       <PASTA_RAIZ>/Citta_Residence/2026-10-23_Citta_Residence/2026-10-23_Citta_Residence_Quarto_1_01.jpg
+  Vídeo e fotos da Finalização ficam na pasta Vistoria do apartamento:
+      <PASTA_RAIZ>/Citta_Residence/Vistoria/2026-10-23_Citta_Residence_Finalizacao_01.mp4
 
 Arquivos do projeto: app.py, design.css, requirements.txt, .streamlit/config.toml (tema)
 """
@@ -39,6 +41,7 @@ ABA_CHECKOUTS = "checkouts"
 PASTA_FOTOS_PADRAO = "1zB9XyrqfGXvjX6N9QDvABAnIuddKQsjb"  # pode ser sobrescrita em secrets
 TORNAR_FOTOS_PUBLICAS = False  # True = qualquer pessoa com o link vê a foto
 TIPOS_FOTO = ["jpg", "jpeg", "png"]
+TIPOS_VIDEO = ["mp4", "mov", "m4v", "webm"]  # vídeo do check-out (Finalização)
 LADO_MAX_FOTO = 1600  # px — fotos do celular são reduzidas para subir mais rápido
 
 APARTAMENTOS = ["Citta Residence", "Vista Park"]
@@ -227,11 +230,15 @@ def obter_ou_criar_pasta(service, nome, pasta_pai):
 
 
 def enviar_fotos(service, fotos, pasta_id, prefixo):
-    """fotos = lista de dicts {"nome", "tipo", "dados"} guardados na sessão."""
+    """fotos = lista de dicts {"nome", "tipo", "dados"} guardados na sessão.
+    Devolve a lista de links, na mesma ordem dos arquivos."""
     links = []
     for i, foto in enumerate(fotos, start=1):
         ext = "jpg" if foto["tipo"] == "image/jpeg" else foto["nome"].rsplit(".", 1)[-1].lower()
-        media = MediaIoBaseUpload(io.BytesIO(foto["dados"]), mimetype=foto["tipo"])
+        video = foto["tipo"].startswith("video")
+        # vídeos sobem em partes (resumable), o que é mais seguro para arquivos grandes
+        media = MediaIoBaseUpload(io.BytesIO(foto["dados"]), mimetype=foto["tipo"],
+                                  resumable=video, chunksize=8 * 1024 * 1024)
         arquivo = service.files().create(
             body={"name": f"{prefixo}_{i:02d}.{ext}", "parents": [pasta_id]},
             media_body=media, fields="id", supportsAllDrives=True).execute()
@@ -240,7 +247,7 @@ def enviar_fotos(service, fotos, pasta_id, prefixo):
                 fileId=arquivo["id"], body={"role": "reader", "type": "anyone"},
                 supportsAllDrives=True).execute()
         links.append(f"https://drive.google.com/file/d/{arquivo['id']}/view")
-    return " | ".join(links)
+    return links
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -343,9 +350,20 @@ def chave_uploader(grupo):
     return f"up_{grupo}_{ss.up_ver.get(grupo, 0)}"
 
 
+def guardar_arquivo(arquivo):
+    """Fotos são reduzidas; vídeos são guardados como vieram."""
+    if (arquivo.type or "").startswith("video"):
+        return {"nome": arquivo.name, "tipo": arquivo.type, "dados": arquivo.getvalue()}
+    return reduzir_foto(arquivo)
+
+
+def eh_video(item):
+    return item["tipo"].startswith("video")
+
+
 def adicionar_fotos(grupo):
     novos = ss.get(chave_uploader(grupo)) or []
-    ss.fotos.setdefault(grupo, []).extend(reduzir_foto(f) for f in novos)
+    ss.fotos.setdefault(grupo, []).extend(guardar_arquivo(f) for f in novos)
     ss.up_ver[grupo] = ss.up_ver.get(grupo, 0) + 1  # limpa o campo de upload
 
 
@@ -425,11 +443,14 @@ def rotulo_grupo(texto):
     st.markdown(f'<div class="ck-group">{texto}</div>', unsafe_allow_html=True)
 
 
-def bloco_fotos(grupo, titulo):
+def bloco_fotos(grupo, titulo, com_video=False):
     fotos = ss.fotos.get(grupo, [])
-    rotulo = f"Fotos ({len(fotos)})" if fotos else "Fotos"
-    with st.expander(rotulo, icon=":material/photo_camera:"):
-        st.file_uploader(f"Adicionar fotos – {titulo}", type=TIPOS_FOTO,
+    nome = "Fotos e vídeo" if com_video else "Fotos"
+    rotulo = f"{nome} ({len(fotos)})" if fotos else nome
+    tipos = TIPOS_FOTO + TIPOS_VIDEO if com_video else TIPOS_FOTO
+    with st.expander(rotulo, expanded=bool(fotos),
+                     icon=":material/videocam:" if com_video else ":material/photo_camera:"):
+        st.file_uploader(f"Adicionar {nome.lower()} – {titulo}", type=tipos,
                          accept_multiple_files=True, key=chave_uploader(grupo),
                          on_change=adicionar_fotos, args=(grupo,),
                          label_visibility="collapsed")
@@ -437,7 +458,10 @@ def bloco_fotos(grupo, titulo):
             with st.container(key=f"grade-fotos-{grupo}"):
                 for i, foto in enumerate(fotos):
                     with st.container(key=f"foto-{grupo}-{i}"):
-                        st.image(foto["dados"], width="stretch")
+                        if eh_video(foto):
+                            st.video(foto["dados"])
+                        else:
+                            st.image(foto["dados"], width="stretch")
                         st.button("Remover", key=f"rm_{grupo}_{i}", icon=":material/delete:",
                                   type="tertiary", on_click=remover_foto, args=(grupo, i))
 
@@ -616,6 +640,14 @@ def tela_finalizacao(etapa, historico):
         linhas.append(f'<div class="ck-sum-row"><span>Cozinha</span>'
                       f'<span class="ck-muted">{f"{n_coz} foto(s)" if n_coz else ""}</span>'
                       f'<span class="ck-pill">contada</span></div>')
+        midia_final = ss.fotos.get("final", [])
+        n_vid = sum(eh_video(m) for m in midia_final)
+        n_fot = len(midia_final) - n_vid
+        partes = ([f"{n_vid} vídeo(s)"] if n_vid else []) + ([f"{n_fot} foto(s)"] if n_fot else [])
+        linhas.append(f'<div class="ck-sum-row"><span>Vídeo do check-out</span>'
+                      f'<span class="ck-muted">{" · ".join(partes)}</span>'
+                      f'<span class="ck-pill {"ok" if n_vid else "warn"}">'
+                      f'{"enviado" if n_vid else "sem vídeo"}</span></div>')
         st.markdown("".join(linhas), unsafe_allow_html=True)
         pendentes = sum(len(itens_do_comodo(c)) - len(conferidos(c)) for c in COMODOS)
         if pendentes:
@@ -625,6 +657,7 @@ def tela_finalizacao(etapa, historico):
     with st.container(border=True, key="card-8"):
         titulo_cartao("flag", "Fechamento")
         st.radio("Apartamento liberado?", ["Sim", "Não"], horizontal=True, key="w_liberado")
+        bloco_fotos("final", "Finalização", com_video=True)
         st.text_area("Observações finais", key="w_obs_finais",
                      placeholder="Algo que a próxima pessoa precisa saber")
 
@@ -639,7 +672,7 @@ def tela_finalizacao(etapa, historico):
                            key="nav_salvar", disabled=duplicado, width="stretch")
     if salvar:
         try:
-            with st.spinner("Enviando fotos e salvando o check-out..."):
+            with st.spinner("Enviando fotos e vídeo e salvando o check-out..."):
                 salvar_checkout()
             carregar_historico.clear()
             ss["mensagem_sucesso"] = (f"Check-out de {apartamento()} "
@@ -683,9 +716,14 @@ def tela_historico(historico):
             return
         linha = df.iloc[opcoes.index(escolha)]
         cols_fotos = [c for c in df.columns if c.startswith("Fotos - ") and linha[c]]
-        if not cols_fotos:
+        cols_videos = [c for c in df.columns if c.startswith("Vídeos - ") and linha[c]]
+        if not cols_fotos and not cols_videos:
             st.caption("Esse check-out não tem fotos.")
             return
+        for col in cols_videos:
+            rotulo_grupo(col.replace("Vídeos - ", "Vídeo · "))
+            for n, link in enumerate(linha[col].split(" | "), start=1):
+                st.link_button(f"Abrir vídeo {n} no Drive", link, icon=":material/play_circle:")
         for col in cols_fotos:
             rotulo_grupo(col.replace("Fotos - ", ""))
             imagens = []
@@ -736,17 +774,34 @@ def salvar_checkout():
     registro = montar_registro()
     grupos = [(c["titulo"], ss.fotos.get(c["chave"], [])) for c in COMODOS]
     grupos.append(("Cozinha", ss.fotos.get("cozinha", [])))
+    grupos.append(("Finalização", ss.fotos.get("final", [])))
 
     nome_checkout = f"{data_str()}_{slug(apartamento())}"
-    if any(fotos for _, fotos in grupos):
+    if any(arquivos for _, arquivos in grupos):
         drive = conectar_drive()
-        # uma pasta por apartamento e, dentro dela, uma pasta por check-out
+        # Estrutura no Drive:
+        #   <raiz>/<Apartamento>/<data>_<Apartamento>/   fotos dos cômodos e da cozinha
+        #   <raiz>/<Apartamento>/Vistoria/               vídeo e fotos da Finalização
         pasta_apto = obter_ou_criar_pasta(drive, slug(apartamento()), pasta_raiz_fotos())
-        pasta_id = obter_ou_criar_pasta(drive, nome_checkout, pasta_apto)
-        for titulo, fotos in grupos:
-            registro[f"Fotos - {titulo}"] = (
-                enviar_fotos(drive, fotos, pasta_id, f"{nome_checkout}_{slug(titulo)}")
-                if fotos else "")
+        pastas = {}
+
+        def pasta_destino(titulo):
+            nome = "Vistoria" if titulo == "Finalização" else nome_checkout
+            if nome not in pastas:
+                pastas[nome] = obter_ou_criar_pasta(drive, nome, pasta_apto)
+            return pastas[nome]
+
+        for titulo, arquivos in grupos:
+            if not arquivos:
+                registro[f"Fotos - {titulo}"] = ""
+                continue
+            links = enviar_fotos(drive, arquivos, pasta_destino(titulo),
+                                 f"{nome_checkout}_{slug(titulo)}")
+            registro[f"Fotos - {titulo}"] = " | ".join(
+                l for a, l in zip(arquivos, links) if not eh_video(a))
+            videos = [l for a, l in zip(arquivos, links) if eh_video(a)]
+            if videos:
+                registro[f"Vídeos - {titulo}"] = " | ".join(videos)
     salvar_registro(registro)
 
 
